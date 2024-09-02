@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: github-backup
+  namespace: github
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: github-backup
+  template:
+    metadata:
+      labels:
+        app: github-backup
+    spec:
+      containers:
+      - name: github-backup
+        image:  FILL THIS IN
+        env:
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: github-secret
+              key: FILL THIS IN
+        volumeMounts:
+        - name: backup-storage
+          mountPath: /app/github_backups
+      volumes:
+      - name: backup-storage
+        persistentVolumeClaim:
+          claimName: github-backup-pvc

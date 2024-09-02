@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: github-backup-cronjob
+  namespace: github
+spec:
+  schedule: "0 */12 * * *"  # choose time
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: github-backup
+            image: your image
+            env:
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: github-secret
+                  key: token
+            volumeMounts:
+            - name: backup-storage
+              mountPath: /app/github_backups
+          volumes:
+          - name: backup-storage
+            persistentVolumeClaim:
+              claimName: github-backup-pvc
+          restartPolicy: OnFailure
